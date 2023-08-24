@@ -68,4 +68,13 @@ public class TransactionController {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/mostPopularAuthor")
+    public ResponseEntity mostPopularAuthor(){
+        try{
+            return new ResponseEntity(transactionService.mostPopularAuthor(),HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Some Exception occurred : " + e.getMessage());
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

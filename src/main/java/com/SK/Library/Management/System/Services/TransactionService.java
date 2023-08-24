@@ -26,6 +26,9 @@ public class TransactionService {
     StudentRepository studentRepository;
     @Autowired
     LibraryCardRepository cardRepository;
+
+    @Autowired
+    AuthorRepository authorRepository;
     @Value("${book.maxBookLimit}")
     private Integer maxBookLimit;
 
@@ -130,7 +133,7 @@ public class TransactionService {
         return "Book return successfully";
     }
     public Integer totalFineInYear(Integer year) throws Exception{
-        List<Transaction> transactionList = transactionRepository.findTransactionByTransactionStatusAndTransactionType(TransactionStatus.Success, TransactionType.Return);
+        List<Transaction> transactionList = transactionRepository.findTransactionsByTransactionStatusAndTransactionType(TransactionStatus.Success, TransactionType.Return);
         if(transactionList.size() == 0){
             log.info("There are no transactions which are in Success status and return type");
             return 0;
@@ -165,7 +168,7 @@ public class TransactionService {
         return studentNames;
     }
     public String studentsWhoReadMaxDistinctBooks() throws Exception{
-        List<Transaction> transactionList = transactionRepository.findTransactionByTransactionStatusAndTransactionType(TransactionStatus.Success, TransactionType.Issue);
+        List<Transaction> transactionList = transactionRepository.findTransactionsByTransactionStatusAndTransactionType(TransactionStatus.Success, TransactionType.Issue);
         if(transactionList.size()==0){
             throw new TransactionTableEmptyException("There is no transaction data present");
         }
@@ -189,7 +192,7 @@ public class TransactionService {
         return card.getStudent().getName();
     }
     public BookWithMaxFine bookWithMaxFine() throws Exception{
-        List<Transaction> transactionList = transactionRepository.findTransactionByTransactionStatusAndTransactionType(TransactionStatus.Success, TransactionType.Return);
+        List<Transaction> transactionList = transactionRepository.findTransactionsByTransactionStatusAndTransactionType(TransactionStatus.Success, TransactionType.Return);
         if(transactionList.size()==0){
             throw new TransactionTableEmptyException("There is no transaction data present");
         }
@@ -214,5 +217,43 @@ public class TransactionService {
             }
         }
         return new BookWithMaxFine(bookTitleWithMaxFine, maxFine);
+    }
+    public String mostPopularAuthor() throws Exception{
+        List<Transaction> transactionList = transactionRepository.findTransactionsByTransactionStatusAndTransactionType(TransactionStatus.Success, TransactionType.Issue);
+        if(transactionList.size()==0){
+            log.error("Transaction table is empty");
+            throw new TransactionTableEmptyException("There is no transaction data present");
+        }
+        List<Author> authorList = authorRepository.findAll();
+        if(authorList.size() == 0){
+            log.error("Author table is empty");
+            throw new AuthorTableEmptyException("There is no author data present");
+        }
+        HashMap<String, HashSet<Integer>> map = new HashMap<>(); // Key :- Author Name:bookIds separated by "," -> Value :- Set of unique Card No's
+        for(Author author : authorList){
+            List<Book> bookList = author.getBookList();
+            if(bookList.size() == 0) { continue; }
+            String s = author.getName() + ":";
+            for (Book book : bookList){
+                s += book.getBookId() + ",";
+            }
+            map.put(s,new HashSet<>());
+        }
+        int maxStudents = Integer.MIN_VALUE;
+        String authorName = "";
+        for(String str : map.keySet()){
+            for(Transaction transaction : transactionList){
+                if(str.contains(transaction.getBook().getBookId() + "")){
+                    HashSet<Integer> set = map.getOrDefault(str,new HashSet<>());
+                    set.add(transaction.getLibraryCard().getCardNo());
+                    map.put(str,set);
+                }
+            }
+            if(map.get(str).size() > maxStudents){
+                maxStudents = map.get(str).size();
+                authorName = str.substring(0, str.indexOf(":"));
+            }
+        }
+        return authorName;
     }
 }

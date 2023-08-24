@@ -9,6 +9,6 @@ import java.util.*;
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
 
     List<Transaction> findTransactionsByBookAndLibraryCardAndTransactionStatusAndTransactionType(Book book, LibraryCard card, TransactionStatus transactionStatus, TransactionType transactionType);
-    List<Transaction> findTransactionByTransactionStatusAndTransactionType(TransactionStatus transactionStatus, TransactionType transactionType);
+    List<Transaction> findTransactionsByTransactionStatusAndTransactionType(TransactionStatus transactionStatus, TransactionType transactionType);
 
 }
