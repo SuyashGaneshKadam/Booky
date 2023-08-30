@@ -33,15 +33,6 @@ public class AuthorController {
             return new ResponseEntity(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
     }
-    @GetMapping("/getAuthorDtoById")
-    public ResponseEntity getAuthorDtoById(@RequestParam("authorId") Integer authorId){
-        try{
-            return new ResponseEntity(authorService.getAuthorDtoById(authorId), HttpStatus.FOUND);
-        }
-        catch (Exception e){
-            return new ResponseEntity(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
-        }
-    }
     @GetMapping("/getAuthorById")
     public ResponseEntity getAuthorById(@RequestParam("authorId") Integer authorId){
         try{
@@ -51,10 +42,21 @@ public class AuthorController {
             return new ResponseEntity(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
     }
+
     @GetMapping("/getBookTitlesByAuthorId")
-    private ResponseEntity getBookTitlesByAuthorId(@RequestParam("authorId")Integer authorId){
+    public ResponseEntity getBookTitlesByAuthorId(@RequestParam("authorId")Integer authorId){
         try{
             return new ResponseEntity(authorService.getBookTitlesByAuthorId(authorId),HttpStatus.FOUND);
+        }
+        catch (Exception e){
+            return new ResponseEntity(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @GetMapping("/getAuthors")
+    public ResponseEntity getAuthors(){
+        try{
+            return new ResponseEntity(authorService.getAuthors(),HttpStatus.FOUND);
         }
         catch (Exception e){
             return new ResponseEntity(e.getMessage(), HttpStatus.EXPECTATION_FAILED);

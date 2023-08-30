@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,5 +18,5 @@ public class GetAuthorByIdResponseDto {
     private String emailId;
     private Integer age;
     private String penName;
-
+    private List<String> bookList;
 }
